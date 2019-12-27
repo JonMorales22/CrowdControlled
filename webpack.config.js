@@ -9,13 +9,15 @@ module.exports = {
 	},
 	module: {
 		rules: [
-		// 	{
-		// 		test: /\.tsx?$/,
-		// 		loader: 'babel-loader',
-		// 	},
 			{ 
 				test: /\.(js)$/,
-				use: 'babel-loader'
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: [ "@babel/preset-env"],
+						plugins: ['@babel/plugin-proposal-class-properties']
+					  }
+				}
 			}
 		]
 	},

@@ -1,3 +1,5 @@
+import { Notes } from './Chords/Notes.js';
+
 var audioCtx;
 
 export default class Audio {
@@ -11,5 +13,13 @@ export default class Audio {
         oscillator.connect(audioCtx.destination);
         oscillator.start();
         oscillator.stop(audioCtx.currentTime+1);   
+    }
+
+    playSound(notename) {
+        var oscillator = audioCtx.createOscillator();
+        oscillator.frequency.setValueAtTime(Notes.NoteNameToFrequency[notename], audioCtx.currentTime);
+        oscillator.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime+1); 
     }
 }

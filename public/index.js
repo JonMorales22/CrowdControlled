@@ -1,32 +1,24 @@
-import Audio from './Audio.js';
+import PoopClient from "./Client.js"
 
-var audio = new Audio();
-var io = require('socket.io-client');
-var tmi = require('tmi.js');
-var audioCtx = new window.AudioContext;
-
-const client = new tmi.Client({
-	options: { debug: true },
-	connection: {
-		reconnect: true,
-		secure: true
-	},
-	identity: {
-		username: 'johnnycolision',
-		password: 'oauth:6kxk06z7ogetovam07h1aixkz3btjl'
-	},
-	channels: [ 'c9sneaky' ]
-});
-client.connect();
-client.on('message', (channel, tags, message, self) => {
-	if(self) return;
-  if(message.includes('KEKW'))
-    audio.playSound();
-});
-
+var client = new PoopClient();
 var button = document.querySelector('#test');
+var connectButton = document.querySelector('#connect');
+var form = document.querySelector("#channelname")
 
 button.onclick = function() {
-  console.log('ass');
-  audio.playSound();
+	playC4();
+}
+
+connectButton.onclick = function(e) {
+    console.log(form.value);
+    client.setChannel(form.value);
+    client.connectPoop();
+}
+
+function playC4() {
+	audio.playSound("c4");
+}
+
+function playG4() {
+	audio.playSound("g4");
 }
