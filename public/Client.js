@@ -1,10 +1,11 @@
 import Audio from './Audio.js';
 import tmi from 'tmi.js';
 
+var defaultChannel = "neytiri"
 var audio = new Audio();
 var isConnected = false;
 var options = {
-	options: { debug: true },
+	options: { debug: false },
 	connection: {
 		reconnect: true,
 		secure: true
@@ -16,7 +17,7 @@ var options = {
 	channels: []
 }
  
-var poopClient;
+var poopClient = new tmi.Client();
 
 // client.on('message', (channel, tags, message, self) => {
 // 	if(self) return;
@@ -31,44 +32,58 @@ var poopClient;
 
 export default class PoopClient {
 	setChannel(name) {
+		if(!name)
+			throw "Cannot set channel name to null or empty."
+		
 		options.channels = [name];
 		console.log(options.channels);
 	}
 
-	connectPoop() {
+	async connectPoop() {
 		console.log(options);
-		if(isConnected) { 
+		if(isConnected) 
 			throw `Already connected to ${options.channels[0]}!!`;
-			return;
-		}
+		
+		if(options.channels.length < 1)
+			this.setChannel(defaultChannel)
+				
 
 		poopClient = new tmi.Client(options);
 		
-		poopClient.connect().then(() => {
-			isConnected=true;
-		
-			poopClient.on('message', (channel, tags, message, self) => {
-				if(self) return;
-				
-				console.log(message);
-	
-				if(message.includes('KEKW')) {
-					audio.playSound("c4");
-				}
-				if(message.includes('AYAYA')) {
-					audio.playSound("g4");
-				}
-			});
-		})
+		await poopClient.connect()
+		isConnected=true;
+		poopClient.on('message', (channel, tags, message, self) => this.handleMessageEvent(message))
 	}
 
-	disconnect() {
-		if(!isConnected) throw "No connection is open!";
+	handleMessageEvent(message) {
+		console.log(message);
+		var message = message.toLowerCase();
+
+		if(message.includes("kekw")) {
+			audio.playSound("c4");
+			return;
+		}
+		if(message.includes("pog")) {
+			audio.playSound("e4");	
+			return;
+		}
+		if(message.includes("lul")) {
+			audio.playSound("g4");
+			return;
+		}
+		if(message.includes(":)")) {
+			audio.playSound("d4");
+			return;
+		}
+	}
+
+	async disconnectPoop() {
+		if(!isConnected)
+			throw "No connection is open!";
 		
-		client.disconnect.then(() => {
-			isConnected = false;
-			console.log(`Disconnected from ${options.channels[0]}`)
-		});
+		await poopClient.disconnect();
+		isConnected=false;
+		console.log(`Disconnected from ${options.channels[0]}`)
 	}
 
 }

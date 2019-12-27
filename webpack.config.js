@@ -11,11 +11,12 @@ module.exports = {
 		rules: [
 			{ 
 				test: /\.(js)$/,
+				exclude: /(node_modules)/,
 				use: {
 					loader: 'babel-loader',
 					options: {
 						presets: [ "@babel/preset-env"],
-						plugins: ['@babel/plugin-proposal-class-properties']
+						plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-transform-runtime']
 					  }
 				}
 			}
@@ -26,5 +27,6 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			template: 'public/index.html'
 		})
-	]
+	],
+	devServer: { contentBase: './public' }
 }

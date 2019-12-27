@@ -20,6 +20,6 @@ export default class Audio {
         oscillator.frequency.setValueAtTime(Notes.NoteNameToFrequency[notename], audioCtx.currentTime);
         oscillator.connect(audioCtx.destination);
         oscillator.start();
-        oscillator.stop(audioCtx.currentTime+1); 
+        oscillator.stop(audioCtx.currentTime+.5); 
     }
 }

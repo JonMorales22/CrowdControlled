@@ -3,6 +3,7 @@ import PoopClient from "./Client.js"
 var client = new PoopClient();
 var button = document.querySelector('#test');
 var connectButton = document.querySelector('#connect');
+var disconnectButton = document.querySelector('#disconnect');
 var form = document.querySelector("#channelname")
 
 button.onclick = function() {
@@ -10,10 +11,18 @@ button.onclick = function() {
 }
 
 connectButton.onclick = function(e) {
-    console.log(form.value);
-    client.setChannel(form.value);
+    var name = form.value;
+    if(!form.value)
+        name="neytiri";
+
+    client.setChannel(name);
     client.connectPoop();
 }
+
+disconnectButton.onclick = function() {
+    client.disconnectPoop();
+}
+
 
 function playC4() {
 	audio.playSound("c4");
