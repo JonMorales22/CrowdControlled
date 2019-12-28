@@ -1,7 +1,6 @@
 import Audio from './Audio.js';
 import tmi from 'tmi.js';
 
-var defaultChannel = "neytiri"
 var audio = new Audio();
 var isConnected = false;
 var options = {
@@ -39,43 +38,48 @@ export default class PoopClient {
 		console.log(options.channels);
 	}
 
-	async connectPoop() {
+	async connectPoop(handleMessageEvent) {
 		console.log(options);
 		if(isConnected) 
 			throw `Already connected to ${options.channels[0]}!!`;
 		
 		if(options.channels.length < 1)
-			this.setChannel(defaultChannel)
+			throw `Cannot connect! No channel specified in options`
 				
 
 		poopClient = new tmi.Client(options);
 		
 		await poopClient.connect()
 		isConnected=true;
-		poopClient.on('message', (channel, tags, message, self) => this.handleMessageEvent(message))
+		poopClient.on('message', (channel, tags, message, self) => handleMessageEvent(message))
 	}
 
-	handleMessageEvent(message) {
-		console.log(message);
-		var message = message.toLowerCase();
+	// handleMessageEvent(message) {
+		
+	// 	var message = message.toLowerCase();
 
-		if(message.includes("kekw")) {
-			audio.playSound("c4");
-			return;
-		}
-		if(message.includes("pog")) {
-			audio.playSound("e4");	
-			return;
-		}
-		if(message.includes("lul")) {
-			audio.playSound("g4");
-			return;
-		}
-		if(message.includes(":)")) {
-			audio.playSound("d4");
-			return;
-		}
-	}
+	// 	if(message.includes("kekw")) {
+	// 		audio.playSound("c4");
+	// 		return;
+	// 	}
+	// 	if(message.includes("pog")) {
+	// 		audio.playSound("e4");	
+	// 		return;
+	// 	}
+	// 	if(message.includes("lul")) {
+	// 		audio.playSound("g4");
+	// 		return;
+	// 	}
+	// 	if(message.includes(":)")) {
+	// 		audio.playSound("d4");
+	// 		return;
+	// 	}
+
+	// 	if(message.includes("kappa")) {
+	// 		audio.playSound("f4");
+	// 		return;
+	// 	}
+	// }
 
 	async disconnectPoop() {
 		if(!isConnected)

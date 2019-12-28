@@ -15,11 +15,11 @@ export default class Audio {
         oscillator.stop(audioCtx.currentTime+1);   
     }
 
-    playSound(notename) {
+    playSound(notename, time=.5) {
         var oscillator = audioCtx.createOscillator();
         oscillator.frequency.setValueAtTime(Notes.NoteNameToFrequency[notename], audioCtx.currentTime);
         oscillator.connect(audioCtx.destination);
         oscillator.start();
-        oscillator.stop(audioCtx.currentTime+.5); 
+        oscillator.stop(audioCtx.currentTime+time); 
     }
 }
