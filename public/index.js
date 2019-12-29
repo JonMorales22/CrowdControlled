@@ -15,27 +15,29 @@ var midiAccess;
 
 window.addEventListener('load', async() => {
     midiAccess = await navigator.requestMIDIAccess();
-    midiAccess.outputs.forEach((port, key) => {
-        console.log(port);
-    })
-    sendNote();
+    // midiAccess.outputs.forEach((port, key) => {
+    //     console.log(port);
+    // })
+    // sendNote();
+    client.setChannel("pokimane");
+    client.connectPoop(handleMessageEvent);
 })
 
-function sendNote(noteName="c4", time=500.0 ) {
-    var noteOnMessage = [0x90, Notes.NoteNameToMidi[noteName], 0x7f];    // note on, middle C, full velocity
-    var output = midiAccess.outputs.get(371816370);
-    output.send( noteOnMessage );  //omitting the timestamp means send immediately.
-    output.send( [0x80, Notes.NoteNameToMidi[noteName], 0x40], window.performance.now() + time); // Inlined array creation- note off, middle C,  
-                                                                        // release velocity = 64, timestamp = now + 1000ms.
-}
+// function sendNote(noteName="c4", time=500.0 ) {
+//     var noteOnMessage = [0x90, Notes.NoteNameToMidi[noteName], 0x7f];    // note on, middle C, full velocity
+//     var output = midiAccess.outputs.get(371816370);
+//     output.send( noteOnMessage );  //omitting the timestamp means send immediately.
+//     output.send( [0x80, Notes.NoteNameToMidi[noteName], 0x40], window.performance.now() + time); // Inlined array creation- note off, middle C,  
+//                                                                         // release velocity = 64, timestamp = now + 1000ms.
+// }
 
-function sendNoteMidi(midiNote=60, time=1000.0) {
-    var noteOnMessage = [0x90, midiNote, 0x7f];    // note on, middle C, full velocity
-    var output = midiAccess.outputs.get(371816370);
-    output.send( noteOnMessage );  //omitting the timestamp means send immediately.
-    output.send( [0x80, midiNote, 0x40], window.performance.now() + time); // Inlined array creation- note off, middle C,  
-                                                                        // release velocity = 64, timestamp = now + 1000ms.
-}
+// function sendNoteMidi(midiNote=60, time=1000.0) {
+//     var noteOnMessage = [0x90, midiNote, 0x7f];    // note on, middle C, full velocity
+//     var output = midiAccess.outputs.get(371816370);
+//     output.send( noteOnMessage );  //omitting the timestamp means send immediately.
+//     output.send( [0x80, midiNote, 0x40], window.performance.now() + time); // Inlined array creation- note off, middle C,  
+//                                                                         // release velocity = 64, timestamp = now + 1000ms.
+// }
 
 connectButton.onclick = (e) => {
     if(!form.value) {
@@ -51,38 +53,40 @@ disconnectButton.onclick = function() {
     client.disconnectPoop();
 }
 
+button.onclick = () => playNote("B3");
+
+function playNote(note) {
+    var audio = document.querySelector(`audio[data-key='${note}']`)
+    audio.currentTime=0;
+    audio.play();
+}
 
 function handleMessageEvent(message) {
 	var message = message.toLowerCase();
-    console.log(message);
+    // console.log(message);
 	if(message.includes("kekw")) {
-		sendNote();
+		playNote("C4");
 		return;
 	}
 	if(message.includes("pog")) {
-		sendNote("e4");	
+		playNote("E4");	
 		return;
 	}
 	if(message.includes("lul")) {
-		sendNote("g4");
+		playNote("G4");
 		return;
 	}
 	if(message.includes(":)")) {
-		sendNote("d4");
+		playNote("D4");
 		return;
 	}
-
 	if(message.includes("kappa")) {
-		sendNote("f4");
+		playNote("A4");
 		return;
     }
-    
-    if(isPepe(message))
-    {
-        console.log(message)
+    if(isPepe(message)) {
         const note = findRandomNote();
-        console.log(note);
-        sendNoteMidi(note);
+        playNote(note.dataset.key);
     }
 }
 
@@ -91,8 +95,9 @@ function isPepe(message) {
         return true;    
 }
 
-var notes = Notes.GetMidiNotesArray()
+const notes = document.querySelectorAll("audio");
+console.log("notes: " + notes);
 function findRandomNote() {
-    var index = Math.floor((Math.random()*14));
+    var index = Math.floor((Math.random()*notes.length));
     return notes[index];
 }
