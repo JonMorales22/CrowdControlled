@@ -1,34 +1,8 @@
 import Audio from './Audio.js';
 import tmi from 'tmi.js';
 
-var audio = new Audio();
-var isConnected = false;
-var options = {
-	options: { debug: false },
-	connection: {
-		reconnect: true,
-		secure: true
-	},
-	identity: {
-		username: 'johnnycolision',
-		password: 'oauth:6kxk06z7ogetovam07h1aixkz3btjl'
-	},
-	channels: []
-}
- 
-var poopClient = new tmi.Client();
-
-// client.on('message', (channel, tags, message, self) => {
-// 	if(self) return;
-	  
-// 	if(message.includes('KEKW')) {
-// 		audio.play("c4");
-// 	}
-// 	if(message.includes('AYAYA')) {
-// 		audio.play("g4");
-// 	}
-// });
-
+//this class basically handles state for twitch chat client
+//if a user tries to connect to multiple chats it will throw an error 
 export default class PoopClient {
 	setChannel(name) {
 		if(!name)
@@ -44,8 +18,7 @@ export default class PoopClient {
 			throw `Already connected to ${options.channels[0]}!!`;
 		
 		if(options.channels.length < 1)
-			throw `Cannot connect! No channel specified in options`
-				
+			throw `Cannot connect! No channel specified in options`			
 
 		poopClient = new tmi.Client(options);
 		
@@ -53,33 +26,6 @@ export default class PoopClient {
 		isConnected=true;
 		poopClient.on('message', (channel, tags, message, self) => handleMessageEvent(message))
 	}
-
-	// handleMessageEvent(message) {
-		
-	// 	var message = message.toLowerCase();
-
-	// 	if(message.includes("kekw")) {
-	// 		audio.playSound("c4");
-	// 		return;
-	// 	}
-	// 	if(message.includes("pog")) {
-	// 		audio.playSound("e4");	
-	// 		return;
-	// 	}
-	// 	if(message.includes("lul")) {
-	// 		audio.playSound("g4");
-	// 		return;
-	// 	}
-	// 	if(message.includes(":)")) {
-	// 		audio.playSound("d4");
-	// 		return;
-	// 	}
-
-	// 	if(message.includes("kappa")) {
-	// 		audio.playSound("f4");
-	// 		return;
-	// 	}
-	// }
 
 	async disconnectPoop() {
 		if(!isConnected)
@@ -89,10 +35,20 @@ export default class PoopClient {
 		isConnected=false;
 		console.log(`Disconnected from ${options.channels[0]}`)
 	}
-
 }
 
-// connectButton.onclick = function() {
-// 	client.disconnect().then(console.log("disconnected"));
-// }
-
+var isConnected = false;
+var options = {
+	options: { debug: false },
+	connection: {
+		reconnect: true,
+		secure: true
+	},
+	identity: {
+		username: 'johnnycolision',
+		password: 'oauth:6kxk06z7ogetovam07h1aixkz3btjl'
+	},
+	channels: []
+}
+ 
+var poopClient = new tmi.Client();

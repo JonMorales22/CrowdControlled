@@ -37,16 +37,6 @@ function sendNoteMidi(midiNote=60, time=1000.0) {
                                                                         // release velocity = 64, timestamp = now + 1000ms.
 }
 
-// function getMidiPorts() {
-//     Midis.setMidiAccess(navigator);
-//     var outputs = Midis.getOutputs();
-//     console.log(Midis.outputs);
-//     console.log(Midis.inputs);
-// }
-
-
-//button.onclick = getMidiPorts;
-
 connectButton.onclick = (e) => {
     if(!form.value) {
         alert("Must specify a channel name!");
@@ -64,7 +54,7 @@ disconnectButton.onclick = function() {
 
 function handleMessageEvent(message) {
 	var message = message.toLowerCase();
-    //console.log(message);
+    console.log(message);
 	if(message.includes("kekw")) {
 		sendNote();
 		return;

@@ -66,23 +66,15 @@ function MIDIMessageEventHandler(event) {
     switch (event.data[0] & 0xf0) {
       case 0x90:
         if (event.data[2]!=0) {  // if velocity != 0, this is a note-on message
-          //var noteFreq = frequencyFromNoteNumber(event.data[1])
-          //console.log(event.data)
           Midis.emit("noteOn", event.data[1]);
           return;
         }
         // if velocity == 0, fall thru: it's a note-off.  MIDI's weird, y'all.
       case 0x80: {
-        //console.log(event.data);
         Midis.emit("noteOff");
         return;
       }
     }
   }
-
-  // function StateChangeHandler(event) {
-  //   console.log(event);
-  //   console.log(`"Current State: "`)
-  // }
 
 export var Midis = new Midi();
