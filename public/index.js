@@ -3,24 +3,32 @@ import { Midis } from "./Midis.js";
 import Audio from './Audio.js';
 import { Notes } from "./Chords/Notes.js"
 
-var audio = new Audio();
+// var audio = new Audio();
 var client = new PoopClient();
+var audioCtx = new window.AudioContext;
 
 var button = document.querySelector('#test');
 var connectButton = document.querySelector('#connect');
 var disconnectButton = document.querySelector('#disconnect');
 var form = document.querySelector("#channelname")
+var rainAudio = document.querySelector("audio[data-sound-type='effect'")
 
-var midiAccess;
-
+// var midiAccess;
+var gainNode;
 window.addEventListener('load', async() => {
-    midiAccess = await navigator.requestMIDIAccess();
+    //midiAccess = await navigator.requestMIDIAccess();
     // midiAccess.outputs.forEach((port, key) => {
     //     console.log(port);
     // })
     // sendNote();
-    client.setChannel("pokimane");
+    client.setChannel("xqcow");
     client.connectPoop(handleMessageEvent);
+
+    var source = audioCtx.createMediaElementSource(rainAudio);
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value=0.025;
+    source.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
 })
 
 // function sendNote(noteName="c4", time=500.0 ) {
@@ -53,7 +61,13 @@ disconnectButton.onclick = function() {
     client.disconnectPoop();
 }
 
-button.onclick = () => playNote("B3");
+button.onclick = () => {
+    console.log(gainNode.gain);
+    gainNode.gain.value++;
+};
+
+button.onclick = () => {
+};
 
 function playNote(note) {
     var audio = document.querySelector(`audio[data-key='${note}']`)
@@ -61,9 +75,10 @@ function playNote(note) {
     audio.play();
 }
 
+var numMessages = 0;
 function handleMessageEvent(message) {
 	var message = message.toLowerCase();
-    // console.log(message);
+    numMessages++;
 	if(message.includes("kekw")) {
 		playNote("C4");
 		return;
@@ -90,13 +105,36 @@ function handleMessageEvent(message) {
     }
 }
 
+function findVolume(chatSpeed) {
+    var volume = chatSpeed/10;
+    if(volume>1.0)
+        return 1.0;
+    if(volume<.02)
+        return .02;
+    return volume;
+}
+
+setInterval(()=>{
+    console.log(`Chat speed = ${numMessages} per second`)
+    console.log(`volume = ${numMessages/10}`)
+    const volume = findVolume(numMessages);
+    gainNode.gain.value=volume;
+    numMessages=0;
+}, 1000)
+
+
+function findChatSpeed() {
+    numMessages++
+}
+
+
+
 function isPepe(message) {
     if(message.includes("pepe") || message.includes("peepo") || message.includes("pepo") || message.includes("monk"))
         return true;    
 }
 
-const notes = document.querySelectorAll("audio");
-console.log("notes: " + notes);
+const notes = document.querySelectorAll("audio[data-sound-type='note']");
 function findRandomNote() {
     var index = Math.floor((Math.random()*notes.length));
     return notes[index];

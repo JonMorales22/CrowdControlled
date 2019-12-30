@@ -6,8 +6,11 @@ import tmi from 'tmi.js';
 export default class PoopClient {
 	setChannel(name) {
 		if(!name)
-			throw "Cannot set channel name to null or empty."
+			throw "Cannot set channel name to null or empty.";
 		
+		if(isConnected)
+			throw "Cannot set channel, disconnect first!";
+
 		options.channels = [name];
 		console.log(options.channels);
 	}
