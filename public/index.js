@@ -12,6 +12,8 @@ var connectButton = document.querySelector('#connect');
 var disconnectButton = document.querySelector('#disconnect');
 var form = document.querySelector("#channelname")
 var rainAudio = document.querySelector("audio[data-sound-type='effect'")
+rainAudio.autoplay = true;
+rainAudio.loop = true;
 
 // var midiAccess;
 var gainNode;
@@ -21,12 +23,13 @@ window.addEventListener('load', async() => {
     //     console.log(port);
     // })
     // sendNote();
-    client.setChannel("xqcow");
+    client.setChannel("pokimane");
     client.connectPoop(handleMessageEvent);
 
     var source = audioCtx.createMediaElementSource(rainAudio);
     gainNode = audioCtx.createGain();
-    gainNode.gain.value=0.025;
+    console.log(gainNode.gain.maxValue);
+    gainNode.gain.value=minValue;
     source.connect(gainNode);
     gainNode.connect(audioCtx.destination);
 })
@@ -76,9 +79,20 @@ function playNote(note) {
 }
 
 var numMessages = 0;
+var messageReceived=false;
+var tm;
 function handleMessageEvent(message) {
-	var message = message.toLowerCase();
-    numMessages++;
+    console.log("On cooldown: " + message);
+    message = message.toLowerCase()
+    
+    if(!messageReceived) {
+        tm = setTimeout(()=>{
+            messageReceived=false;
+        }, 500);
+    }
+
+    messageReceived=true;
+
 	if(message.includes("kekw")) {
 		playNote("C4");
 		return;
@@ -95,7 +109,7 @@ function handleMessageEvent(message) {
 		playNote("D4");
 		return;
 	}
-	if(message.includes("kappa")) {
+	if(message.includes("kapp")) {
 		playNote("A4");
 		return;
     }
@@ -105,29 +119,41 @@ function handleMessageEvent(message) {
     }
 }
 
-function findVolume(chatSpeed) {
-    var volume = chatSpeed/10;
-    if(volume>1.0)
-        return 1.0;
-    if(volume<.02)
-        return .02;
-    return volume;
+setInterval(()=>{ 
+    if(!messageReceived) {
+        console.log("off cooldown");
+        decrementRainAudio();
+    }
+    else{
+        incrementRainAudio();
+    }
+
+}, 500)
+
+const maxValue = 2;
+const minValue = .025;
+const increment = .025;
+const decrement = .025;
+
+function incrementRainAudio() {
+    var volume = gainNode.gain.value;
+    volume+=increment;
+    if(volume>=maxValue)
+        volume=maxValue;
+    
+    // console.log("increment");
+    gainNode.gain.value = volume;
 }
 
-setInterval(()=>{
-    console.log(`Chat speed = ${numMessages} per second`)
-    console.log(`volume = ${numMessages/10}`)
-    const volume = findVolume(numMessages);
-    gainNode.gain.value=volume;
-    numMessages=0;
-}, 1000)
-
-
-function findChatSpeed() {
-    numMessages++
+function decrementRainAudio() {
+    var volume = gainNode.gain.value;
+    volume-=decrement;
+    if(volume<=minValue)
+        volume=minValue;
+    
+    // console.log("decrement");
+    gainNode.gain.value = volume;
 }
-
-
 
 function isPepe(message) {
     if(message.includes("pepe") || message.includes("peepo") || message.includes("pepo") || message.includes("monk"))
