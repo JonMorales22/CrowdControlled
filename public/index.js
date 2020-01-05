@@ -23,7 +23,7 @@ window.addEventListener('load', async() => {
     //     console.log(port);
     // })
     // sendNote();
-    client.setChannel("pokimane");
+    client.setChannel("xqcow");
     client.connectPoop(handleMessageEvent);
 
     var source = audioCtx.createMediaElementSource(rainAudio);
@@ -79,80 +79,59 @@ function playNote(note) {
 }
 
 var numMessages = 0;
-var messageReceived=false;
-var tm;
-function handleMessageEvent(message) {
-    console.log("On cooldown: " + message);
-    message = message.toLowerCase()
-    
-    if(!messageReceived) {
-        tm = setTimeout(()=>{
-            messageReceived=false;
-        }, 500);
-    }
+var lastCheck = 0;
+var threshold=3;
+setInterval(()=>{
+    // console.log(`Speed of chat = ${numMessages}`);
+    //console.log(`tanh(${numMessages/10})=${Math.tanh(numMessages/10)}`);
+    var difference = numMessages-lastCheck;
+    console.log(`${numMessages} - ${lastCheck} = ${difference}`);
+    console.log(`tanh(${difference/10}})=${Math.tanh(difference/10)}`);
 
-    messageReceived=true;
-
-	if(message.includes("kekw")) {
-		playNote("C4");
-		return;
-	}
-	if(message.includes("pog")) {
-		playNote("E4");	
-		return;
-	}
-	if(message.includes("lul")) {
-		playNote("G4");
-		return;
-	}
-	if(message.includes(":)")) {
-		playNote("D4");
-		return;
-	}
-	if(message.includes("kapp")) {
-		playNote("A4");
-		return;
-    }
-    if(isPepe(message)) {
-        const note = findRandomNote();
-        playNote(note.dataset.key);
-    }
-}
-
-setInterval(()=>{ 
-    if(!messageReceived) {
-        console.log("off cooldown");
-        decrementRainAudio();
-    }
-    else{
+    if(numMessages>threshold) { 
+        console.log(`${numMessages} > Last check ${lastCheck}`)
+        console.log("increment");
+        // incrementRainAudio(Math.tanh(difference/10));
         incrementRainAudio();
     }
-
-}, 500)
-
-const maxValue = 2;
-const minValue = .025;
-const increment = .025;
-const decrement = .025;
-
-function incrementRainAudio() {
-    var volume = gainNode.gain.value;
-    volume+=increment;
-    if(volume>=maxValue)
-        volume=maxValue;
+    else {
+        console.log(`${numMessages} < Last check ${lastCheck}`)
+        console.log("decrement");
+        // decrementRainAudio(Math.tanh(Math.abs(difference/10)));
+        decrementRainAudio();
+    }
     
-    // console.log("increment");
-    gainNode.gain.value = volume;
-}
+    lastCheck=numMessages;
+    numMessages=0;
+}, 2000)
 
-function decrementRainAudio() {
-    var volume = gainNode.gain.value;
-    volume-=decrement;
-    if(volume<=minValue)
-        volume=minValue;
+function handleMessageEvent(message) {
+    message = message.toLowerCase()
     
-    // console.log("decrement");
-    gainNode.gain.value = volume;
+    var note;
+	if(message.includes("kekw")) {
+        note = ("C4");
+	}
+	else if(message.includes("pog")) {
+		note = ("E4");	
+	}
+	else if(message.includes("lul")) {
+		note = ("G4");
+	}
+	else if(message.includes(":)")) {
+		note = ("D4");
+	}
+	else if(message.includes("kapp")) {
+		note = ("A4");
+    }
+    else if(isPepe(message)) {
+        note = findRandomNote().dataset.key;
+    }
+
+    if(note) {
+        playNote(note);
+        numMessages++;
+    }
 }
 
 function isPepe(message) {
@@ -164,4 +143,27 @@ const notes = document.querySelectorAll("audio[data-sound-type='note']");
 function findRandomNote() {
     var index = Math.floor((Math.random()*notes.length));
     return notes[index];
+}
+
+
+//RAIN STUFF
+const maxValue = 2;
+const minValue = .025;
+const increment = .025;
+const decrement = .025;
+
+function incrementRainAudio() {
+    var volume = gainNode.gain.value;
+    volume += increment;
+    if(volume>=maxValue)
+        volume=maxValue;
+    gainNode.gain.value = volume;
+}
+
+function decrementRainAudio() {
+    var volume = gainNode.gain.value;
+    volume -= decrement;
+    if(volume<=minValue)
+        volume=minValue;
+    gainNode.gain.value = volume;
 }
