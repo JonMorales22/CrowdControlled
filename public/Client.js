@@ -1,6 +1,9 @@
 import Audio from './Audio.js';
 import tmi from 'tmi.js';
+import { eventManager } from './EventManager';
 
+//const EventEmitter = require("events");
+//const eventManager = new EventManager();
 //this class basically handles state for twitch chat client
 //if a user tries to connect to multiple chats it will throw an error 
 export default class PoopClient {
@@ -15,7 +18,7 @@ export default class PoopClient {
 		console.log(options.channels);
 	}
 
-	async connectPoop(handleMessageEvent) {
+	async connectPoop() {
 		console.log(options);
 		if(isConnected) 
 			throw `Already connected to ${options.channels[0]}!!`;
@@ -23,18 +26,21 @@ export default class PoopClient {
 		if(options.channels.length < 1)
 			throw `Cannot connect! No channel specified in options`			
 
-		poopClient = new tmi.Client(options);
+		client = new tmi.Client(options);
 		
-		await poopClient.connect()
+		await client.connect()
 		isConnected=true;
-		poopClient.on('message', (channel, tags, message, self) => handleMessageEvent(message))
+
+		client.on('message', (channel, tags, message, self) => {
+			eventManager.emitMessageReceivedEvent(message);
+		});
 	}
 
 	async disconnectPoop() {
 		if(!isConnected)
 			throw "No connection is open!";
 		
-		await poopClient.disconnect();
+		await client.disconnect();
 		isConnected=false;
 		console.log(`Disconnected from ${options.channels[0]}`)
 	}
@@ -54,4 +60,4 @@ var options = {
 	channels: []
 }
  
-var poopClient = new tmi.Client();
+var client = new tmi.Client();
