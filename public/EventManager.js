@@ -18,7 +18,7 @@ class EventManager extends EventEmitter {
     }
 
     emitEmoteEvent(emote) {
-        console.log("EmoteEvent: " + emote)
+        // console.log("EmoteEvent: " + emote)
         this.emit("EmoteReceived", emote);
     }
 }

@@ -38,7 +38,7 @@ export default class TwitchChatAnalyzer  {
 
     handlePoop(message) {
         const emote = this.analyzeMessage(message);
-        console.log("Poop Handled: " + message);
+        // console.log("Poop Handled: " + message);
         
         if(!emote)
             return;
