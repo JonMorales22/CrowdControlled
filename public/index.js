@@ -13,7 +13,7 @@ var form = document.querySelector("#channelname")
 
 // var midiAccess;
 window.addEventListener('load', async() => {
-    initClient();
+    initClient("johnnycolision");
     initRainAudio();
     initAudioElementManager();
 })
@@ -23,8 +23,8 @@ function initAudioElementManager() {
     audioElementManager.setAudioElements(audioElements);
 }
 
-function initClient() {
-    client.setChannel("xqcow");
+function initClient(channelName) {
+    client.setChannel(channelName);
     client.connectPoop();
 }
 
@@ -34,8 +34,7 @@ connectButton.onclick = (e) => {
         return;
     }
 
-    client.setChannel(form.value);
-    client.connectPoop(analyzeMessage);
+    initClient(form.value);
 }
 
 disconnectButton.onclick = function() {
